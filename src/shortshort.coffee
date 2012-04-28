@@ -1,4 +1,5 @@
 
+base62 = require "base62"
 
 # I took the regex from:
 # http://www.igvita.com/2006/09/07/validating-url-in-ruby-on-rails/
@@ -24,7 +25,7 @@ class ShortShort
       callback(err, null) if err?
 
       # prepare the result
-      result = { key: String(globalCounter) }
+      result = { key: base62.encode(globalCounter) }
 
       # write to redis
       @redis.set "ss-key-#{result.key}", url, ->

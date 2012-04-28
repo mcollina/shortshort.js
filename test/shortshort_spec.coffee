@@ -62,3 +62,13 @@ describe "ShortShort", ->
     @subject.resolve "abc", (err, url) =>
       expect(err.message).to.equal("key not found")
       done()
+
+  it "should encode the key using a base62 algorithm", (done) ->
+    @client.set "ss-global-counter", 195948556, =>
+      @subject.shorten "http://www.google.com", (err, result) =>
+        # the expected value is 195948557,
+        # but as it should be encoded in base62,
+        # we expect dgbaB
+        expect(result.key).to.equal("dgbaB")
+        done()
+
