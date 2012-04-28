@@ -1,6 +1,4 @@
---require chai
---require sinon
+--growl
 --reporter dot
 --ui bdd
---growl
 --colors
