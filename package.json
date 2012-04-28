@@ -6,7 +6,7 @@
     "author"            : "hello@matteocollina.com",
     "licenses"          : ["MIT"],
     "engines"           : { "node" : "0.4 || 0.5 || 0.6" },
-    "main"              : "lib/shortshort.js",
+    "main"              : "./lib/shortshort.js",
     "dependencies"      : {
       "redis": ">= 0",
       "base62": "= 0.1.0"
