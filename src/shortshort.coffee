@@ -7,6 +7,7 @@ httpRegex = /(^$)|(^(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(
 class ShortShort
 
   constructor: (@redis) ->
+    throw "A redis connection is needed by ShortShort" unless @redis?
 
   shorten: (url, callback) ->
 
