@@ -9,13 +9,17 @@ class ShortShort
   constructor: (@redis) ->
 
   shorten: (url, callback) ->
+
     # validate the URL
     unless httpRegex.test(url)
+
+      # return an error message if it is not valid
       callback(message: "not an url")
       return
 
     @redis.incr "ss-global-counter", (err, globalCounter) =>
 
+      # pass forward the error if redis has problems
       callback(err, null) if err?
 
       # prepare the result
@@ -26,12 +30,18 @@ class ShortShort
         callback(null, result)
 
   resolve: (key, callback) ->
+
+    # fetch the value from redis
     @redis.get "ss-key-#{key}", (err, value) ->
+
+      # pass forward the error if redis has problems
       callback err if err?
 
       if value?
+        # if we have a value we pass it to the callback
         callback null, value
       else
+        # we pass an error message
         callback message: "key not found", null
 
 module.exports = ShortShort
