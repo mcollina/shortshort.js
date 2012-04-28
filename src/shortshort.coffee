@@ -15,10 +15,10 @@ class ShortShort
       return
 
     # prepare the result
-    result = { key: "1", redisKey: "ss-key-1" }
+    result = { key: "1" }
 
     # write to redis
-    @redis.set result.redisKey, url, ->
+    @redis.set "ss-key-#{result.key}", url, ->
       callback(null, result)
 
 module.exports = ShortShort
