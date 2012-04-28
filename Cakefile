@@ -19,6 +19,13 @@ task "spec", ->
 task "spec:ci", ->
   launchSpec("--watch")
 
-task "build", ->
+build = (cb = -> )->
   runExternal "rm -rf ./lib", ->
-    runExternal "./node_modules/.bin/coffee -o lib -c src/*.coffee"
+    runExternal "./node_modules/.bin/coffee -o lib -c src/*.coffee", cb
+
+task "build", ->
+  build()
+
+task "publish", ->
+  build ->
+    runExternal "npm publish"

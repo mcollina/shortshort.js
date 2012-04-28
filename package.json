@@ -9,10 +9,10 @@
     "engines"           : { "node" : "0.4 || 0.5 || 0.6" },
     "main"              : "./lib/shortshort",
     "dependencies"      : {
-      "redis": ">= 0",
       "base62": "= 0.1.0"
     },
     "devDependencies"   : {
+      "redis": ">= 0",
       "coffee-script" : "= 1.3.1",
       "mocha": "= 1.0.2",
       "sinon" : "= 1.3.4",
