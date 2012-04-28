@@ -7,6 +7,7 @@ It uses [Redis](http://redis.io) as a backend.
 ## Installation instruction
 
 ```
+npm install redis
 npm install shortshort
 ```
 
