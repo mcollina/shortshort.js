@@ -72,3 +72,26 @@ describe "ShortShort", ->
         expect(result.key).to.equal("dgbaB")
         done()
 
+  it "might be instructed to skip the url validation", (done) ->
+    @subject = new ShortShort(@client, validation: false)
+    
+    @subject.shorten "foobar", (err, result) ->
+      expect(err).to.equal(null)
+      done()
+
+  it "might have a different global counter", (done) ->
+    @subject = new ShortShort(@client, globalCounter: "custom-global-counter")
+
+    @subject.shorten "http://www.google.it", (err, result) =>
+      @client.get "custom-global-counter", (err, value) ->
+        expect(value).to.equal("1")
+        done()
+
+  it "might have a different key prefix", (done) ->
+    @subject = new ShortShort(@client, keyPrefix: "custom-key-")
+
+    url = "http://www.google.it"
+    @subject.shorten url, (err, result) =>
+      @client.get "custom-key-#{result.key}", (err, value) ->
+        expect(value).to.equal(url)
+        done()

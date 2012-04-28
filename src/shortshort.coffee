@@ -7,19 +7,23 @@ httpRegex = /(^$)|(^(http|https):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(
 
 class ShortShort
 
-  constructor: (@redis) ->
+  constructor: (@redis, opts = {}) ->
     throw "A redis connection is needed by ShortShort" unless @redis?
+    @validation = true
+    @validation = opts.validation if opts.validation?
+    @globalCounter = opts.globalCounter || "ss-global-counter"
+    @keyPrefix = opts.keyPrefix || "ss-key-"
 
   shorten: (url, callback) ->
 
     # validate the URL
-    unless httpRegex.test(url)
+    if @validation and not httpRegex.test(url)
 
       # return an error message if it is not valid
       callback(message: "not an url")
       return
 
-    @redis.incr "ss-global-counter", (err, globalCounter) =>
+    @redis.incr @globalCounter, (err, globalCounter) =>
 
       # pass forward the error if redis has problems
       callback(err, null) if err?
@@ -28,13 +32,13 @@ class ShortShort
       result = { key: base62.encode(globalCounter) }
 
       # write to redis
-      @redis.set "ss-key-#{result.key}", url, ->
+      @redis.set @keyPrefix + result.key, url, ->
         callback(null, result)
 
   resolve: (key, callback) ->
 
     # fetch the value from redis
-    @redis.get "ss-key-#{key}", (err, value) ->
+    @redis.get @keyPrefix + key, (err, value) ->
 
       # pass forward the error if redis has problems
       callback err if err?
