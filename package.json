@@ -1,6 +1,6 @@
 {
     "name"              : "shortshort.js", 
-    "version"           : "0.0.0",
+    "version"           : "0.1.0",
     "description"       : "Short library for making short URLs", 
     "keywords"          : ["URL", "URL shortener", "Short"], 
     "author"            : "hello@matteocollina.com",
