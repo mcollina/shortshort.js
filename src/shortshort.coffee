@@ -14,11 +14,13 @@ class ShortShort
       callback(message: "not an url")
       return
 
-    # prepare the result
-    result = { key: "1" }
+    @redis.incr "ss-global-counter", (err, globalCounter) =>
 
-    # write to redis
-    @redis.set "ss-key-#{result.key}", url, ->
-      callback(null, result)
+      # prepare the result
+      result = { key: String(globalCounter) }
+
+      # write to redis
+      @redis.set "ss-key-#{result.key}", url, ->
+        callback(null, result)
 
 module.exports = ShortShort

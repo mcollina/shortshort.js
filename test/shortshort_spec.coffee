@@ -6,20 +6,26 @@ ShortShort = require '../src/shortshort'
 
 describe "shortshort", ->
 
-  before ->
+  beforeEach (done) ->
     @client = redis.createClient()
     @client.select 12
-    @client.flushdb()
+    @client.flushdb =>
+      @subject = new ShortShort(@client)
+      done()
 
-    @subject = new ShortShort(@client)
-
-  after ->
+  afterEach ->
     @client.quit()
 
-  it "should start numbering the shortened url from 1", (done) ->
+  it "should start numbering the shortened urls from 1", (done) ->
     @subject.shorten "http://www.google.it", (err, result) ->
       expect(result.key).to.equal("1")
       done()
+
+  it "should increment the key", (done) ->
+    @subject.shorten "http://www.google.com", (err, result) =>
+      @subject.shorten "http://www.google.it", (err, result) ->
+        expect(result.key).to.equal("2")
+        done()
 
   it "should store a shortened url in redis", (done) ->
     url = "http://www.google.com"
@@ -32,3 +38,16 @@ describe "shortshort", ->
     @subject.shorten "foobar", (err, result) ->
       expect(err.message).to.equal("not an url")
       done()
+
+  it "should increment a global counter when shortening", (done) ->
+    @subject.shorten "http://www.google.it", (err, result) =>
+      @client.get "ss-global-counter", (err, value) ->
+        expect(value).to.equal("1")
+        done()
+
+  it "should increment a global counter when shortening (bis)", (done) ->
+    @subject.shorten "http://www.google.com", (err, result) =>
+      @subject.shorten "http://www.google.it", (err, result) =>
+        @client.get "ss-global-counter", (err, value) ->
+          expect(value).to.equal("2")
+          done()
