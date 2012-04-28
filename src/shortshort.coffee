@@ -16,11 +16,22 @@ class ShortShort
 
     @redis.incr "ss-global-counter", (err, globalCounter) =>
 
+      callback(err, null) if err?
+
       # prepare the result
       result = { key: String(globalCounter) }
 
       # write to redis
       @redis.set "ss-key-#{result.key}", url, ->
         callback(null, result)
+
+  resolve: (key, callback) ->
+    @redis.get "ss-key-#{key}", (err, value) ->
+      callback err if err?
+
+      if value?
+        callback null, value
+      else
+        callback message: "key not found", null
 
 module.exports = ShortShort

@@ -4,7 +4,7 @@ redis = require('redis')
 
 ShortShort = require '../src/shortshort'
 
-describe "shortshort", ->
+describe "ShortShort", ->
 
   beforeEach (done) ->
     @client = redis.createClient()
@@ -51,3 +51,14 @@ describe "shortshort", ->
         @client.get "ss-global-counter", (err, value) ->
           expect(value).to.equal("2")
           done()
+
+  it "should be able to resolve a reference", (done) ->
+    @subject.shorten "http://www.google.com", (err, result) =>
+      @subject.resolve result.key, (err, url) =>
+        expect(url).to.equal("http://www.google.com")
+        done()
+
+  it "should be able to resolve a wrong refernce", (done) ->
+    @subject.resolve "abc", (err, url) =>
+      expect(err.message).to.equal("key not found")
+      done()
