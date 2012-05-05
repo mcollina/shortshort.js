@@ -1,13 +1,17 @@
 {
     "name"              : "shortshort", 
-    "url"               : "https://github.com/mcollina/shortshort.js",
-    "version"           : "0.1.3",
+    "homepage"          : "https://github.com/mcollina/shortshort.js",
+    "version"           : "0.1.4",
     "description"       : "Short library for making short URLs", 
     "keywords"          : ["URL", "URL shortener", "Short"], 
     "author"            : "hello@matteocollina.com",
     "licenses"          : ["MIT"],
     "engines"           : { "node" : "0.4 || 0.5 || 0.6" },
     "main"              : "./lib/shortshort",
+    "repository"        : {
+      "type": "git",
+      "url": "git://github.com/mcollina/shortshort.js.git"
+    },
     "dependencies"      : {
       "base62": "= 0.1.0"
     },
