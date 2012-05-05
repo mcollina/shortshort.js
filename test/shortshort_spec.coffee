@@ -95,3 +95,35 @@ describe "ShortShort", ->
       @client.get "custom-key-#{result.key}", (err, value) ->
         expect(value).to.equal(url)
         done()
+
+  it "should update a key content", (done) ->
+    firstUrl = "http://www.google.it"
+    secondUrl = "http://www.matteocollina.com"
+    @subject.shorten firstUrl, (err, result) =>
+      @subject.update result.key, secondUrl, (err) =>
+        @subject.resolve result.key, (err, value) =>
+          expect(value).to.eql(secondUrl)
+          done()
+
+  it "should not update a key content if it doesn't exist", (done) ->
+    secondUrl = "http://www.matteocollina.com"
+    @subject.update "missing-key", secondUrl, (err) ->
+      expect(err.message).to.equal("key not found")
+      done()
+
+  it "should not update with a wrong url", (done) ->
+    @subject.shorten "http://www.matteocollina.com", (err, result) =>
+      @subject.update result.key, "foobar", (err) ->
+        expect(err.message).to.equal("not an url")
+        done()
+
+  it "might be instructed to skip the url validation for updates", (done) ->
+    @subject = new ShortShort(@client, validation: false)
+
+    first = "aaa"
+    second = "bbb"
+    @subject.shorten first, (err, result) =>
+      @subject.update result.key, second, (err) =>
+        @subject.resolve result.key, (err, value) =>
+          expect(err).to.eql(null)
+          done()

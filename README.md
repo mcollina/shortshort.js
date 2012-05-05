@@ -11,7 +11,7 @@ npm install redis
 npm install shortshort
 ```
 
-## Usage
+## Basic Usage
 
 ```
 var redis = require("redis");
@@ -24,6 +24,28 @@ shortener.shorten("http://www.google.com", function(err, result) {
 
   shortener.resolve(result.key, function(err, url) {
     console.log("The encoded url by key " + result.key + " is " + url);
+  });
+});
+
+```
+
+## Record Update
+
+It is also possible to update a record:
+
+```
+var redis = require("redis");
+var ShortShort = require("shortshort");
+
+var shortener = new ShortShort(redis.createClient());
+
+shortener.shorten("http://www.google.com", function(err, result) {
+  console.log("Your key is " + result.key);
+
+  shortener.update(result.key, "http://matteocollina.com", function(err) {
+    shortener.resolve(result.key, function(err, url) {
+      console.log("The encoded url by key " + result.key + " is " + url);
+    });
   });
 });
 

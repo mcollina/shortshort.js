@@ -26,7 +26,9 @@ class ShortShort
     @redis.incr @globalCounter, (err, globalCounter) =>
 
       # pass forward the error if redis has problems
-      callback(err, null) if err?
+      if err?
+        callback err 
+        return
 
       # prepare the result
       result = { key: base62.encode(globalCounter) }
@@ -41,7 +43,9 @@ class ShortShort
     @redis.get @keyPrefix + key, (err, value) ->
 
       # pass forward the error if redis has problems
-      callback err if err?
+      if err?
+        callback err 
+        return
 
       if value?
         # if we have a value we pass it to the callback
@@ -49,5 +53,29 @@ class ShortShort
       else
         # we pass an error message
         callback message: "key not found", null
+
+  update: (key, newValue, callback) ->
+
+    # validate the URL
+    if @validation and not httpRegex.test(newValue)
+
+      # return an error message if it is not valid
+      callback(message: "not an url")
+      return
+
+    @resolve key, (err, oldValue) =>
+
+      # pass forward the error if resolve has problems
+      if err?
+        callback err 
+        return
+      
+      @redis.set @keyPrefix + key, newValue, (err) ->
+        # pass forward the error if resolve has problems
+        if err?
+          callback err 
+          return
+
+        callback(null)
 
 module.exports = ShortShort
