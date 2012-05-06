@@ -51,6 +51,24 @@ shortener.shorten("http://www.google.com", function(err, result) {
 
 ```
 
+## Fetching of the latest shortened urls
+
+__ShortShort__ automatically tracks the latest 10 keys that
+have been generated.
+
+```
+var redis = require("redis");
+var ShortShort = require("shortshort");
+
+var shortener = new ShortShort(redis.createClient());
+
+shortener.latest(function(err, latest) {
+  console.log("The keys of the latest shortened URLs are:");
+  console.log(latest);
+});
+
+```
+
 ## Configuration options
 
 When you create a new **ShortShort** instance, you have the ability to
@@ -63,6 +81,9 @@ You may pass:
   `ss-global-counter`.
 * `keyPrefix`: the prefix that will be used to save the shortened keys
    in redis. It defaults to `ss-key-`.
+* `latestList`: the key that will be used to save the latest shortened keys
+   in redis. It defaults to `ss-latest-list`.
+* `latestLength`: the length of the latest list. It defaults to 10.
 
 ## Contributing to ShortShort
 

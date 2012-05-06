@@ -13,6 +13,8 @@ class ShortShort
     @validation = opts.validation if opts.validation?
     @globalCounter = opts.globalCounter || "ss-global-counter"
     @keyPrefix = opts.keyPrefix || "ss-key-"
+    @latestList = opts.latestList || "ss-latest-list"
+    @latestLength = opts.latestLength - 1 || 9
 
   shorten: (url, callback) ->
 
@@ -34,8 +36,12 @@ class ShortShort
       result = { key: base62.encode(globalCounter) }
 
       # write to redis
-      @redis.set @keyPrefix + result.key, url, ->
+      @redis.set @keyPrefix + result.key, url, =>
+        @redis.lpush @latestList, result.key, =>
+          @redis.ltrim @latestList, @latestLength, ->
+            # nothing to do here
         callback(null, result)
+
 
   resolve: (key, callback) ->
 
@@ -77,5 +83,12 @@ class ShortShort
           return
 
         callback(null)
+
+  latest: (callback) ->
+    @redis.lrange @latestList, 0, @latestLength, (err, list) ->
+      if err?
+        callback(err, null)
+      else
+        callback(null, list)
 
 module.exports = ShortShort

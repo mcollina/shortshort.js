@@ -127,3 +127,67 @@ describe "ShortShort", ->
         @subject.resolve result.key, (err, value) =>
           expect(err).to.eql(null)
           done()
+
+  it "should show an empty list of latest urls", (done) -> 
+    @subject.latest (err, result) ->
+      expect(result).to.eql([])
+      done()
+
+  it "should show a list containing the id of latest url shortened", (done) ->
+    keys = []
+    @subject.shorten "http://www.matteocollina.com", (err, result) =>
+
+      keys.unshift result.key
+      @subject.shorten "http://www.google.com", (err, result) =>
+
+        keys.unshift result.key
+        @subject.latest (err, result) ->
+
+          expect(result).to.eql(keys)
+          done()
+
+  it "should store the latest list on redis", (done) ->
+    @subject.shorten "http://www.google.it", (err, result) =>
+      @client.lrange "ss-latest-list", 0, 1,  (err, list) ->
+        expect(list).to.eql([result.key])
+        done()
+
+  it "should make the latest list key configurable", (done) ->
+    @subject = new ShortShort(@client, latestList: "AHHA")
+    @subject.shorten "http://www.google.it", (err, result) =>
+      @client.lrange "AHHA", 0, 1,  (err, list) ->
+        expect(list).to.eql([result.key])
+        done()
+
+  it "should store a list of the last 10 url shortened", (done) ->
+    keys = []
+    counter = 0
+    next = (callback) =>
+      currCounter = counter++
+      @subject.shorten "http://www.g#{currCounter}.com", (err, result) =>
+        keys.unshift result.key
+        callback(currCounter)
+
+    for i in [0..20]
+      next (counter) =>
+        if counter == 20
+          @subject.latest (err, result) ->
+            expect(result).to.eql(keys[0...10])
+            done()
+
+  it "should make configurable the length of the list of the latest url shortened", (done) ->
+    @subject = new ShortShort(@client, latestLength: 15)
+    keys = []
+    counter = 0
+    next = (callback) =>
+      currCounter = counter++
+      @subject.shorten "http://www.g#{currCounter}.com", (err, result) =>
+        keys.unshift result.key
+        callback(currCounter)
+
+    for i in [0..20]
+      next (counter) =>
+        if counter == 20
+          @subject.latest (err, result) ->
+            expect(result).to.eql(keys[0...15])
+            done()
