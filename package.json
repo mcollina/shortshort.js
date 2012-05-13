@@ -1,7 +1,7 @@
 {
     "name"              : "shortshort", 
     "homepage"          : "https://github.com/mcollina/shortshort.js",
-    "version"           : "0.3.0",
+    "version"           : "0.3.1",
     "description"       : "Short library for making short URLs", 
     "keywords"          : ["URL", "URL shortener", "Short"], 
     "author"            : "hello@matteocollina.com",
